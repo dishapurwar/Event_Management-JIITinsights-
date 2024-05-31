@@ -281,16 +281,29 @@ function authenticateToken(req, res, next) {
 //   }
 // });
 
+// Authenticate Token Middleware
+function authenticateToken(req, res, next) {
+  const token = req.cookies.token;
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
+
+// Logout Route
 app.post('/logout', authenticateToken, (req, res) => {
   try {
-    // Clear the token in the cookie
-    res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'None' });
-    res.json(true);
+    res.clearCookie('token', { httpOnly: true, secure: false, sameSite: 'None' });
+    res.json({ message: 'Logout successful' });
   } catch (error) {
     console.error('Error during logout:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 app.post("/upload-by-link", async (req, res) => {
   const { link } = req.body;
