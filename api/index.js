@@ -31,10 +31,13 @@ app.use("/uploads", express.static(__dirname + "/uploads"));
 //     origin: "http://localhost:5173",
 //   })
 // );
-app.use(cors({
+const corsOptions = {
+  origin: "http://localhost:5173",
   credentials: true,
-  origin: "*",
-}));
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+app.use(cors(corsOptions));
 
 mongoose.connect(process.env.MONGO_URL);
 
@@ -774,4 +777,7 @@ app.delete("/deleteReminder/:id", async (req, res) => {
 app.get("/admin/admins", getAdmins);
 app.post("/admin/add", addAdmins);
 
-app.listen(4000);
+// app.listen(4000);
+app.listen(process.env.PORT || 4000, () => {
+  console.log("Server is running");
+});
