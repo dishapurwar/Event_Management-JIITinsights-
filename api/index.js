@@ -264,13 +264,24 @@ function authenticateToken(req, res, next) {
   });
 }
 
-app.post("/logout", authenticateToken, async (req, res) => {
+// app.post("/logout", authenticateToken, async (req, res) => {
+//   try {
+//     // Clear the token in the cookie
+//     res.cookie("token", "").json(true);
+//   } catch (error) {
+//     console.error("Error during logout:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+app.post('/logout', authenticateToken, (req, res) => {
   try {
     // Clear the token in the cookie
-    res.cookie("token", "").json(true);
+    res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'None' });
+    res.json(true);
   } catch (error) {
-    console.error("Error during logout:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error during logout:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
